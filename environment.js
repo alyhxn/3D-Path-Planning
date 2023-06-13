@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 export default class Env{
     constructor(scene, start, end){
@@ -7,19 +6,6 @@ export default class Env{
         this.start = start;
         this.end = end;
 
-        const loader = new GLTFLoader();
-        loader.load('../3d_models/collision-world.glb', (gltf) => {
-            this.model = gltf;
-            gltf.scene.position.set(-10, 0, 0);
-            gltf.scene.scale.set(5, 5, 5);
-            // console.log(gltf.scene.children[0]);
-            gltf.scene.children[0].material.transparent = true;
-            gltf.scene.traverse(child => {
-                if (child.isMesh){
-                    // console.log(child);
-                }
-            })
-        });
         const color = new THREE.Color();
         const temp = new THREE.Object3D();
 
@@ -96,9 +82,7 @@ export default class Env{
     }
     initGeometry(mapName, n){
         const slice = mapName.slice(0, 6)
-        if(slice == 'Random')
-            this.Random(mapName)
-        else if(mapName == 'NewRandomCubes')
+        if(mapName == 'NewRandomCubes')
             this.NewRandomCubes(n);
         else
             eval('this.'+mapName+'()');
@@ -131,35 +115,6 @@ export default class Env{
             mesh.setColorAt(i, color.setHex(0xFFFFFF));
         }
         
-        this.scene.add(mesh);
-        this.instancedMesh = mesh;
-        this.obstacles = obstacles;
-    }
-    Random(mapName){
-        const obj = localStorage.getItem(mapName);
-        const obstacles = JSON.parse(obj);
-        const box_geom = new THREE.BoxGeometry(1, 1, 1);
-        const obs_mat = new THREE.MeshMatcapMaterial({
-            color: 'white', transparent: true
-        })
-        const mesh = new THREE.InstancedMesh(box_geom, obs_mat, 3800);
-        const color = new THREE.Color();
-        const temp = new THREE.Object3D();
-
-        for(const [i, obstacle] of obstacles.entries()){
-            temp.position.set(obstacle[0], obstacle[1], obstacle[2]);
-            if (temp.position.x === this.start[0] && temp.position.y == this.start[1] && temp.position.z == this.start[2]){
-                continue;
-            }
-            if (temp.position.x === this.end[0] && temp.position.y == this.end[1] && temp.position.z == this.end[2]){
-                continue;
-            }
-            temp.updateMatrix();
-            temp.position.set(temp.position.x + 0.5, temp.position.y + 0.5, temp.position.z + 0.5);
-            temp.updateMatrix();
-            mesh.setMatrixAt(i, temp.matrix);
-            mesh.setColorAt(i, color.setHex(0xFFFFFF));
-        }
         this.scene.add(mesh);
         this.instancedMesh = mesh;
         this.obstacles = obstacles;
