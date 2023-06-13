@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import Stats from "Stats";
-import { GUI } from "GUI";
-import { OrbitControls } from "OrbitControls";
+import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Env from './environment.js';
 import Astar from './astar.js';
 import RRT from './rrt.js';
@@ -87,7 +87,7 @@ class Simulator{
 
         settings.add(this.props, 'Simulation');
         settings.add(this.props, 'Speed', 1, 200);
-        settings.add(this.props, 'Env', [ 'New Random Cubes', 'Structured Cubes', 'Real World', 'Random1', 'Random2', 'Structured Cubes 2', 'Structured Cubes 3', 'Structured Cubes 4']);
+        settings.add(this.props, 'Env', [ 'New Random Cubes', 'Structured Cubes', 'Structured Cubes 2', 'Structured Cubes 3', 'Structured Cubes 4']);
         settings.add(this.props, 'No_of_obs', 2000, 4000, 100);
         settings.add(this.props, 'Apply');
         settings.add(this.props, 'Algo', [ 'Astar', 'RRT', 'RRT_Ext', 'RBT', 'RBT_Ext', 'RRRT', 'Improved RRT*']);
