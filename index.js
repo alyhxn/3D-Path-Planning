@@ -30,7 +30,7 @@ class Simulator{
         this.initCamera();
         this.initAction();
         this.env = new Env(this.scene, this.start, this.end);
-        [this.obstacles_mesh, this.obstacles] = this.env.initGeometry('Random3', 2000);
+        [this.obstacles_mesh, this.obstacles] = this.env.initGeometry('NewRandomCubes', 2000);
     }
     getWinSize(){
         this.winSize = {
