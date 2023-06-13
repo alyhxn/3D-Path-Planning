@@ -87,7 +87,7 @@ class Simulator{
 
         settings.add(this.props, 'Simulation');
         settings.add(this.props, 'Speed', 1, 200);
-        settings.add(this.props, 'Env', [ 'New Random Cubes', 'Structured Cubes', 'Real World', 'Random1', 'Random2', 'Structured Cubes 2', 'Structured Cubes 3', 'Structured Cubes 4']);
+        settings.add(this.props, 'Env', [ 'New Random Cubes', 'Structured Cubes', 'Structured Cubes 2', 'Structured Cubes 3', 'Structured Cubes 4']);
         settings.add(this.props, 'No_of_obs', 2000, 4000, 100);
         settings.add(this.props, 'Apply');
         settings.add(this.props, 'Algo', [ 'Astar', 'RRT', 'RRT_Ext', 'RBT', 'RBT_Ext', 'RRRT', 'Improved RRT*']);
