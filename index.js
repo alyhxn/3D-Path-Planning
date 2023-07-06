@@ -54,7 +54,7 @@ class Simulator{
             Speed: 100,
             Env: 'New Random Cubes',
             No_of_obs: 2000,
-            Algo: 'RBT_Ext',
+            Algo: 'RBT',
             Apply: function() {
                 self.onApply();
             },
