@@ -24,7 +24,7 @@ class Simulator{
         this.initHelpers();
         this.check = false;
 
-        this.start = [0, 0, 0];
+        this.start = [1, 1, 1];
         this.end = [40, 15, 40];
         this.initLight();
         this.initCamera();
@@ -79,10 +79,10 @@ class Simulator{
             z: 40,
         }
         startFolder.add(this.startObj, 'x', 1, 49)
-        startFolder.add(this.startObj, 'y', 1, 49)
+        startFolder.add(this.startObj, 'y', 1, 19)
         startFolder.add(this.startObj, 'z', 1, 49)
         endFolder.add(this.endObj, 'x', 1, 49)
-        endFolder.add(this.endObj, 'y', 1, 49)
+        endFolder.add(this.endObj, 'y', 1, 19)
         endFolder.add(this.endObj, 'z',1, 49)
 
         settings.add(this.props, 'Simulation');
@@ -90,7 +90,7 @@ class Simulator{
         settings.add(this.props, 'Env', [ 'New Random Cubes', 'Structured Cubes', 'Structured Cubes 2', 'Structured Cubes 3', 'Structured Cubes 4']);
         settings.add(this.props, 'No_of_obs', 2000, 4000, 100);
         settings.add(this.props, 'Apply');
-        settings.add(this.props, 'Algo', [ 'Astar', 'RRT', 'RRT_Ext', 'RBT', 'RBT_Ext', 'RRRT', 'Improved RRT*']);
+        settings.add(this.props, 'Algo', [ 'Astar', 'RRT', 'RRT_Ext', 'RBT', 'Improved RRT*']);
         settings.add(this.props, 'Run');
         settings.add(this.props, 'Pause/Resume');
         settings.add(this.props, 'Save')
@@ -114,17 +114,17 @@ class Simulator{
             this.algo = new Astar(this.scene, this.winSize, this.start, this.end, this.obstacles, this.props.Simulation);
         }
         else if(this.props.Algo == 'RBT') {
-            this.algo = new RBT(this.scene, this.winSize, this.start, this.end, this.obstacles_mesh, this.obstacles, this.props.Simulation);
-        }
-        else if(this.props.Algo == 'RBT_Ext') {
             this.algo = new RBT_Ext(this.scene, this.winSize, this.start, this.end, this.obstacles_mesh, this.obstacles, this.props.Simulation);
         }
+        // else if(this.props.Algo == 'RBT_Ext') {
+        //     this.algo = new RBT_Ext(this.scene, this.winSize, this.start, this.end, this.obstacles_mesh, this.obstacles, this.props.Simulation);
+        // }
         else if(this.props.Algo == 'RRT_Ext'){
             this.algo = new RRT_Ext(this.scene, this.winSize, this.start, this.end, this.obstacles_mesh, this.props.Simulation);
         }
-        else if(this.props.Algo == 'RRRT'){
-            this.algo = new RRRT(this.scene, this.winSize, this.start, this.end, this.obstacles_mesh, this.obstacles, this.props.Simulation);
-        }
+        // else if(this.props.Algo == 'RRRT'){
+        //     this.algo = new RRRT(this.scene, this.winSize, this.start, this.end, this.obstacles_mesh, this.obstacles, this.props.Simulation);
+        // }
         else if(this.props.Algo == 'Improved RRT*'){
             this.algo = new ImprovedRRTStar(this.scene, this.winSize, this.start, this.end, this.obstacles_mesh, this.props.Simulation);
         }
@@ -158,6 +158,9 @@ class Simulator{
             }
             if(e.code === 'KeyR'){
                 this.onRun();
+            }
+            if(e.code === 'KeyP'){
+                this.check = !this.check;
             }
         })
         const blocker = document.getElementById( 'blocker' );
