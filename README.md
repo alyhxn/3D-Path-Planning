@@ -6,7 +6,7 @@ Explore 3D path planning using A*, RRT, and RBT(New) algorithms with this intera
 
 ## Algorithms:
 
-1. **A* Algorithm:**
+1. **A\* Algorithm:**
    - A popular pathfinding algorithm known for its efficiency and optimality.
 
 2. **RRT (Rapidly-Exploring Random Tree) Algorithm:**
