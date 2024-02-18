@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 
+//Inspired by Bug algorithm and Astar
 export default class RBT{
     constructor(scene, sizes, start, end, obstacles_mesh, obstacles, simulation){
         this.scene = scene;
@@ -37,30 +38,30 @@ export default class RBT{
         this.raycaster = new THREE.Raycaster();
     }
     run(){
+        //find a path using rbt
         while(!this.planning()){
         }
         this.simulation = true;
-        // this.find_path(0xffff00);
+        //Optimize
         this.parent_optimize();
-        this.find_path(0xff00ff);
+        //Trace back, draw, and return length of the final path
+        return this.find_path(0xff00ff);
     }
     planning(){
+        //Stop planning all discovered nodes are explored
         if (this.open_set.size == 0){
             return true;
         }
-        // console.log(this.open_set);
+        //Get the lowest cost discovered node for exploring
+        //Explored here involves wall follow and target follow
         const values = [...this.open_set.values()];
         const min = Math.min(...values.map((value, index) => { return value[0];}));
-        // console.log(min)
         const current = [...this.open_set].find(([k, val]) => val[0] === min)[0];
-        // console.log('Before ',...this.open_set)
-        // console.log('Planning current: ', current);
         if(this.isEqual(current, this.start))
             this.open_set.delete(current);
         else
             this.wallFollow(current);
         
-        // this.del(current, this.open_set);
         return this.targetFollow(current);
     }
     isEqual(temp1, temp2){
@@ -70,15 +71,16 @@ export default class RBT{
         }
         return true;
     }
+    //Try to connect to the target directly or put a node as near as possible to the target
     targetFollow(current){
+        //Stop planning if target is reached
         const intersection = this.raycast(current, this.end);
         if(!intersection){
             this.drawNode(this.end, current, 0x0000ff);
             this.addNode(this.end, current);
-            // console.log('ok')
             return true;
         }
-        // console.log(intersection);
+        //Put a new node at the intersection, i.e. the nearest point to the target
         const point = intersection.point;
         const normal = intersection.face.normal;
         const new_node = [this.round(point.x + normal.x * 0.1, 1),
@@ -94,9 +96,8 @@ export default class RBT{
         const dir_obs = this.rotate(normal, Math.PI);
         let dir_next = new THREE.Vector3();
         dir_next.crossVectors(direction, dir_obs);
-
+        //the new node explores the object on the way to target in two opposite direction
         this.open_set.set(new_node, [cost, direction, dir_obs, dir_next]);
-        // console.log('Middle ',...this.open_set)
         this.wallFollow(new_node);
         direction = this.rotate(direction, Math.PI);
         dir_next = this.rotate(dir_next, Math.PI);
@@ -127,9 +128,9 @@ export default class RBT{
         return Math.round(value * multiplier) / multiplier;
     }
     wallFollow(parent){
+        //Explore an object in a straight line until or unless a change in the slope of the surface is detected
         let [_, direction, dir_obs, dir_next] = this.open_set.get(parent);
         this.open_set.delete(parent);
-        // console.log('After ',...this.open_set)
 
         let current = [...parent];
         let index, value, index_obs, value_obs;
@@ -145,9 +146,7 @@ export default class RBT{
                value_obs = v;
             }
         });
-        // console.log('Current '+current);
-        // console.log('Direction ',direction);
-        
+
         if(value<0)
             current[index] = Math.floor(current[index])
         else
@@ -156,11 +155,9 @@ export default class RBT{
 
         let current_obs;
         let check = false;
-        let prev = current;
         while(true){
             current_obs = [current[0] + dir_obs.x * 0.2, current[1] + dir_obs.y * 0.2, current[2] + dir_obs.z * 0.2];
-            // console.log(current_obs);
-            // this.drawCircle(current_obs, 0x00ff00);
+            
             if(this.checkCollision(current)){
                 check = true;
                 if(!dir_next){
@@ -168,7 +165,6 @@ export default class RBT{
                     dir_obs = direction;
                 }
                 current[index] -= value * 0.2;
-                // console.log(1)
             }
             else if(!this.checkCollision(current_obs)){
                 check = true;
@@ -178,27 +174,21 @@ export default class RBT{
                     dir_next = dir_obs;
                     dir_obs = this.rotate(direction, Math.PI);
                 }
-                // console.log(2)
             }
             if(check){
                 current[index] = this.round(current[index], 1);
 
                 if(this.checkExistence(current, parent, false)){
-                    // console.log('Failed: '+current);
                     return;
                 }
                 this.drawNode(current, parent, 0x0000ff);
                 this.addNode(current, parent);
-                // console.log('Child '+current);
-                // console.log('.');
                 const cost = this.getCost(current, parent);
                 this.open_set.set(current, [cost, dir_next, dir_obs, false]);
                 return;
             }
             prev = [...current];
             current[index] += value * this.step_size;
-            // current = [current[0] + direction.x * this.step_size, current[1] + direction.y * this.step_size, current[2] + direction.z * this.step_size];
-
         }   
     }
     checkCollision(item){
@@ -285,25 +275,26 @@ export default class RBT{
     find_path(color){
         let current = this.end;
         let parent = current;
+        let distance = 0;
         while(current){
+            distance += this.getDistance(current, parent)
             this.drawNode(current, parent, color);
             parent = current
             current = this.getMapValue(current, this.parents);
             // console.log(current)
         }
+        return distance;
     }
     parent_optimize(){
         let current = this.end;
         let temp, prev, count = 0;
         while(true){
             temp = this.parents.get(current);
-            // console.log(temp, current);
             if(!temp)
                 break
             prev = temp
             count = 0
             while(temp && !this.raycast(current, temp) && count < 5){
-                // console.log(temp);
                 prev = temp
                 temp = this.parents.get(temp);
                 count++;

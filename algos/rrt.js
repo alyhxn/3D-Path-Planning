@@ -34,30 +34,37 @@ export default class RRT{
         this.raycaster = new THREE.Raycaster();
     }
     run(){
+        //plan a path using rrt
         while(!this.planning()){
         }
         this.simulation = true;
+
+        //try to optimize it
         try{
             this.parent_optimize();
-            // this.find_path(0xffff00);
             this.raycast_optimize();
         }
         catch(Error){
             console.log(Error)
         }
+        //draw the final path and return the length
         return this.find_path(0xff00ff);
     }
     planning(){
         let node_rand, node_near, node_new, min_dist;
         while(true){
+            //get a random node
             node_rand = this.get_rand();
+            //find the explored node nearest the random
             [node_near, min_dist] = this.get_near(node_rand);
+            //Break if end is reachable from nearest node
             if (this.get_distance(node_near, this.end) < this.step_size + 3){
                 node_new = this.end;
                 if(!this.is_colliding(node_near, node_new)){
                     break;
                 }
             }
+            //Get a new node on the edge connecting random and it nearest node
             node_new = this.get_new(node_near, node_rand, min_dist);
             if (node_new[0] < this.lowerLimit[0] || node_new[0] > this.upperLimit[0]  ||
                 node_new[1] < this.lowerLimit[1] || node_new[1] > this.upperLimit[1]  ||
@@ -68,6 +75,7 @@ export default class RRT{
                 break;
             }
         }
+        //Push the random node to the tree if it is from unexplored area
         if (this.checkNodes(node_new)){
             this.nodes.push(node_new);
             this.parents.set(node_new, node_near);
@@ -75,10 +83,10 @@ export default class RRT{
                 this.draw_node(node_new, node_near, 0x000000);
             }
         }
+        //Stop planning if the new node has reach end
         if (this.get_distance(node_new, this.end) == 0){
             return true;
         }
-        // console.log(node_new)
         return false;
     }
     get_rand(){
@@ -117,7 +125,6 @@ export default class RRT{
         const far = new THREE.Vector3();
         this.raycaster.far = far.subVectors(v1, v2).length();
         const inter = this.raycaster.intersectObject(this.obstacles);
-        // console.log(inter);
         if(inter.length != 0){
             // const point = inter[0].point;
             // this.draw_test([point.x, point.y, point.z], node_near);
@@ -192,27 +199,27 @@ export default class RRT{
     find_path(color){
         let current = this.end;
         let parent = current;
-        let distance = 0;
+        let length = 0;
         while(current){
-            distance += this.getDistance(current, parent);
+            length += this.getDistance(current, parent);
             this.draw_node(current, parent, color);
             parent = current
             current = this.getMapValue(current, this.parents);
-            // console.log(current)
+
         }
-        return distance;
+        return length;
     }
+    //Skip extra nodes
     parent_optimize(){
         let current = this.end;
         let temp, prev;
         while(true){
             temp = this.getMapValue(current, this.parents);
-            // console.log(temp, current);
+            
             if(!temp)
                 break
             prev = temp
             while(temp && !this.raycast(current, temp)){
-                // console.log(temp);
                 prev = temp
                 temp = this.getMapValue(temp, this.parents);
             }
@@ -220,6 +227,7 @@ export default class RRT{
             current =this.getMapValue(current, this.parents);
         }
     }
+    //Shorten path based on ugly turns
     raycast_optimize(){
         let first, second, third, inter, point, normal, index, value, temp, small, new_node, distance;
         first = this.end;
@@ -227,34 +235,28 @@ export default class RRT{
         third = this.parents.get(second);
         while(third){
             small = Infinity
-            // console.log(1)
             inter = this.raycast(first, this.start);
             if(!inter)
                 break
             point = inter.point;
             point = [point.x, point.y, point.z]
             normal = inter.face.normal;
-            // console.log('Normal: ', normal);
+            
             Object.values(normal).map((v, i) => {
                 if(v){
                    index = i;
                    value = v;
                 }
             });
-            // console.log('Inter: ', point)
-            // console.log('Second: ',second)
 
             for(let i=0; i<3; i++){
                 temp = [...second];
                 if(i==index)
                     continue
                 temp[i] = point[i];
-                // console.log('Temp: ',temp)
-                // console.log(this.raycast(third, temp))
                 if(!this.raycast(third, temp) && !this.raycast(first, temp)){
                     distance = this.getDistance(temp, first) + this.getDistance(temp, this.start);
                     if(distance < small){
-                        // console.log('Distance: ', distance);
                         new_node = temp
                         small = distance
                     }
@@ -264,8 +266,6 @@ export default class RRT{
             if(!new_node || distance < small){
                 new_node = second;
             }
-            // console.log('New node: ', new_node)
-            // console.log('.');
             this.parents.set(first, new_node);
             this.parents.set(new_node, third);
             first = this.parents.get(first);

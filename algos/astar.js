@@ -27,15 +27,17 @@ class Astar{
       scene.add(this.instanceMesh);
   }
   run(){
+    //plan the path using Astar
     while(!this.planning()){
     }
+    //Trace back each node and return the length
     return this.find_path();
   }
   planning(){
-    // console.log(this.current);
     let current = {...this.current}
     let temp;
     const direction = [0.25, 0.25, 0.25, -0.25, -0.25, -0.25];
+    //Explore 6 nodes around current node
     for(let i=0; i<6; i++){
         temp = {...current};
         temp[i%3] += direction[i];
@@ -44,22 +46,22 @@ class Astar{
           if(!(this.checkOpenSet(temp)) && !(this.checkCloseSet(temp)) && !(this.checkCollision(temp))){
               this.ground_truth.set(temp, this.getFromMap(this.ground_truth, current) + 1);
               this.open_set.set(temp,this.heuristic(temp, this.end) * 8 + this.ground_truth.get(temp));
-              // console.log(heuristic(temp, end) + 1)
               this.parents.set(temp, current);
           }
         }
     }
-    // console.log(...this.open_set.keys())
-    // console.log(this.open_set.values())
-    // console.log(this.open_set.size);
+    //If all reachable nodes are explored
     if (this.open_set.size == 0){
         return true;
     }
+    //find the node with minimum cost from open_set and explore its neighbors
     const min = Math.min(...this.open_set.values());
     const key = [...this.open_set].find(([k, val]) => val === min)[0];
     this.open_set.delete(key);
     this.nodes.push(key);
     current = key;
+
+    //Stop the planning if the target is reached
     if(current[0] == this.end[0] && current[1] == this.end[1] && current[2] == this.end[2]){
         return true;
     }
