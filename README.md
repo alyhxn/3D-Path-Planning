@@ -1,6 +1,6 @@
 # 3D Path Planning Simulation
 
-Explore 3D path planning using A*, RRT, and RBT(New) algorithms with this interactive simulation implemented in JavaScript.
+Explore 3D path planning using A*, RRT, and RBT(New) algorithms with this interactive simulation implemented in JavaScript and Three.js.
 
 [Click here to access the simulation](https://alyhxn.github.io/3D-Path-Planning/)
 
@@ -17,6 +17,15 @@ Explore 3D path planning using A*, RRT, and RBT(New) algorithms with this intera
 3. **RBT (New) Algorithm:**
    - Introducing a new algorithm for 3D path planning.
 
-Feel free to interact with the simulation and observe the behaviors of these algorithms in the context of 3D path planning.
+Feel free to interact with the simulation and observe the behaviors of these algorithms in the context of 3D path planning. Improvement suggestions and contributions are welcome.
 
 For the live simulation, visit [this link](https://alyhxn.github.io/3D-Path-Planning/).
+
+
+## Usage:
+
+If you want to experiment with this, just clone the repo. Everything is setup ;)
+
+## Credit Notice:
+
+If you use or reference this work in your projects, please provide credit by mentioning the original author and including a link to this repository.
