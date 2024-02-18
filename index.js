@@ -1,15 +1,15 @@
 import * as THREE from 'three';
-import Stats from 'three/examples/jsm/libs/stats.module.js';
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import Env from './environment.js';
-import Astar from './astar.js';
-import RRT from './rrt.js';
-import RRT_Ext from './rrt_ext.js';
-import RBT from './rbt.js';
-import RBT_Ext from './rbt_ext.js';
-import RRRT from './rrrt.js';
-import ImprovedRRTStar from './ImprovedRRTStar.js';
+import Stats from "Stats";
+import { GUI } from "GUI";
+import { OrbitControls } from "OrbitControls";
+import Env from './environment/environment.js';
+import Astar from './algos/astar.js';
+import RRT from './algos/rrt.js';
+import RRT_Ext from './algos/rrt_ext.js';
+import RBT from './algos/rbt.js';
+import RBT_Ext from './algos/rbt_ext.js';
+import RRRT from './algos/rrrt.js';
+import ImprovedRRTStar from './algos/ImprovedRRTStar.js';
 
 class Simulator{
     constructor(){
@@ -17,7 +17,7 @@ class Simulator{
         this.clock = new THREE.Clock();
         this.delta = 0;
         this.FPS = 100;
-        this.getWinSize();
+        this.setWinSize();
         this.initFPS();
         this.initGUI();
         this.initEvenListeners();
@@ -32,7 +32,7 @@ class Simulator{
         this.env = new Env(this.scene, this.start, this.end);
         [this.obstacles_mesh, this.obstacles] = this.env.initGeometry('NewRandomCubes', 2000);
     }
-    getWinSize(){
+    setWinSize(){
         this.winSize = {
             width: window.innerWidth,
             height: window.innerHeight
@@ -139,7 +139,7 @@ class Simulator{
     }
     initEvenListeners(){
         window.addEventListener('resize', () => {
-            this.getWinSize();
+            this.setWinSize();
             this.canvas.width = this.winSize.width;
             this.canvas.height = this.winSize.height;
             this.camera.aspect = this.winSize.width / this.winSize.height;
